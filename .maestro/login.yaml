@@ -1,0 +1,26 @@
+# Maestro E2E test for login flow
+# Run with: maestro test .maestro/login.yaml
+
+appId: com.vibestack.vibeapp
+
+---
+- launchApp
+- assertVisible: "Vibe App"
+
+# Navigate to login
+- tapOn: "Get Started"
+- assertVisible: "Welcome back"
+
+# Fill in login form
+- tapOn: "Email"
+- inputText: "test@example.com"
+- tapOn: "Password"
+- inputText: "password123"
+
+# Submit form
+- tapOn: "Sign In"
+
+# Wait for navigation
+- extendedWaitUntil:
+    visible: "Home"
+    timeout: 10000

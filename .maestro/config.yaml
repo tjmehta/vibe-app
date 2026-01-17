@@ -1,0 +1,18 @@
+# Maestro configuration
+# https://maestro.mobile.dev/
+
+name: Vibe App E2E Tests
+
+flows:
+  - login.yaml
+  - signup.yaml
+
+# Platform-specific settings
+ios:
+  bundleId: com.vibestack.vibeapp
+android:
+  packageName: com.vibestack.vibeapp
+
+# Test execution settings
+timeout: 30000
+retryCount: 2

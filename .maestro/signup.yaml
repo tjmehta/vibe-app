@@ -1,0 +1,32 @@
+# Maestro E2E test for signup flow
+# Run with: maestro test .maestro/signup.yaml
+
+appId: com.vibestack.vibeapp
+
+---
+- launchApp
+- assertVisible: "Vibe App"
+
+# Navigate to login then signup
+- tapOn: "Get Started"
+- assertVisible: "Welcome back"
+- tapOn: "Create account"
+- assertVisible: "Create your account"
+
+# Fill in signup form
+- tapOn: "Name"
+- inputText: "Test User"
+- tapOn: "Email"
+- inputText: "newuser@example.com"
+- tapOn: "Password"
+- inputText: "securepassword123"
+- tapOn: "Confirm Password"
+- inputText: "securepassword123"
+
+# Submit form
+- tapOn: "Create Account"
+
+# Wait for navigation to dashboard
+- extendedWaitUntil:
+    visible: "Home"
+    timeout: 10000

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm:*)",
+      "Bash(npx:*)",
+      "Bash(npm:*)",
+      "Bash(eas:*)",
+      "Bash(expo:*)",
+      "Bash(maestro:*)",
+      "Bash(jest:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Read",
+      "Write",
+      "Edit"
+    ],
+    "deny": []
+  }
+}

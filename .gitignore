@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Native builds
+ios/
+android/
+
+# Environment
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Convex - keep _generated stubs for CI builds
+# convex/_generated/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Testing
+coverage/
+
+# Build artifacts
+*.log
+*.tsbuildinfo
+
+# EAS
+.easignore
+
+# Misc
+*.pem

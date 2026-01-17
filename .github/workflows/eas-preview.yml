@@ -1,0 +1,131 @@
+name: EAS Preview
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: eas-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: EAS Update Preview
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check configuration
+        id: check
+        run: |
+          if [ -n "$EXPO_TOKEN" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "::notice::EXPO_TOKEN not configured, skipping EAS preview"
+            echo "configured=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Checkout
+        if: steps.check.outputs.configured == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        if: steps.check.outputs.configured == 'true'
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        if: steps.check.outputs.configured == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Setup Expo
+        if: steps.check.outputs.configured == 'true'
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        if: steps.check.outputs.configured == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Create EAS Update
+        if: steps.check.outputs.configured == 'true'
+        id: eas-update
+        run: |
+          # Create update and capture the output
+          UPDATE_OUTPUT=$(eas update --auto --non-interactive --json 2>&1 || true)
+          echo "update_output<<EOF" >> $GITHUB_OUTPUT
+          echo "$UPDATE_OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Extract QR code URL if available
+          QR_URL=$(echo "$UPDATE_OUTPUT" | jq -r '.[0].qrCodeUrl // empty' 2>/dev/null || true)
+          if [ -n "$QR_URL" ]; then
+            echo "qr_url=$QR_URL" >> $GITHUB_OUTPUT
+          fi
+
+          # Extract update group ID
+          GROUP_ID=$(echo "$UPDATE_OUTPUT" | jq -r '.[0].group // empty' 2>/dev/null || true)
+          if [ -n "$GROUP_ID" ]; then
+            echo "group_id=$GROUP_ID" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR with QR Code
+        if: steps.check.outputs.configured == 'true' && steps.eas-update.outputs.qr_url
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const qrUrl = '${{ steps.eas-update.outputs.qr_url }}';
+            const groupId = '${{ steps.eas-update.outputs.group_id }}';
+
+            const body = `## 📱 EAS Preview Ready!
+
+            Scan the QR code below with Expo Go to test this PR:
+
+            ![QR Code](${qrUrl})
+
+            **Update Group:** \`${groupId}\`
+
+            ---
+            <details>
+            <summary>How to test</summary>
+
+            1. Install [Expo Go](https://expo.dev/client) on your device
+            2. Scan the QR code above
+            3. The app will load with changes from this PR
+
+            </details>`;
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' && comment.body.includes('EAS Preview Ready')
+            );
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body,
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
