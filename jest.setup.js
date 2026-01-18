@@ -41,14 +41,6 @@ jest.mock("convex/react", () => ({
   useConvex: jest.fn(),
 }))
 
-// Mock AsyncStorage
-jest.mock("@react-native-async-storage/async-storage", () => ({
-  setItem: jest.fn(),
-  getItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-}))
-
 // Mock secure store
 jest.mock("expo-secure-store", () => ({
   getItemAsync: jest.fn(),
