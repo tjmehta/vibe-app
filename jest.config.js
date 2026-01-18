@@ -1,7 +1,7 @@
 module.exports = {
   preset: "jest-expo",
   transformIgnorePatterns: [
-    "node_modules/(?!(react-native|@react-native|expo|@expo|react-navigation|@react-navigation|nativewind|tailwind-merge|clsx|class-variance-authority|convex|@convex-dev)/)",
+    "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg|nativewind|tailwind-merge|clsx|class-variance-authority|convex|@convex-dev))",
   ],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   moduleNameMapper: {
