@@ -48,9 +48,6 @@ jest.mock("expo-secure-store", () => ({
   deleteItemAsync: jest.fn(),
 }))
 
-// Silence the warning: Animated: `useNativeDriver` is not supported
-jest.mock("react-native/Libraries/Animated/NativeAnimatedHelper")
-
 // Mock NativeWind
 jest.mock("nativewind", () => ({
   styled: (component) => component,
