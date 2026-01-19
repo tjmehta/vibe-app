@@ -37,7 +37,15 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "maestro test .maestro/",
     "typecheck": "tsc --noEmit",
-    "prepare": "husky"
+    "prepare": "husky",
+    "env:pull:convex": "./scripts/convex/env-pull.sh all",
+    "env:pull:convex:development": "./scripts/convex/env-pull.sh development",
+    "env:pull:convex:preview": "./scripts/convex/env-pull.sh preview",
+    "env:pull:convex:production": "./scripts/convex/env-pull.sh production",
+    "env:push:convex:development": "./scripts/convex/env-push.sh development",
+    "env:push:convex:preview": "./scripts/convex/env-push.sh preview",
+    "env:push:convex:production": "./scripts/convex/env-push.sh production",
+    "env:verify:convex": "./scripts/convex/env-verify.sh"
   },
   "dependencies": {
     "@convex-dev/auth": "^0.0.90",
