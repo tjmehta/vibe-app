@@ -293,11 +293,38 @@ eas update --branch preview --message "Bug fix"
 
 ## Environment Variables
 
-```bash
-# Required for backend
-EXPO_PUBLIC_CONVEX_URL=     # Convex deployment URL
+This project uses a consistent env file pattern:
 
-# Optional for CI
+| File Pattern | Purpose |
+|--------------|---------|
+| `.env.development` | Development environment vars |
+| `.env.production` | Production environment vars |
+| `.env.convex.development` | Convex dev deployment vars (local reference) |
+| `.env.convex.production` | Convex prod deployment vars (local reference) |
+| `.env.convex-cli.development` | Convex CLI deploy key for dev |
+| `.env.convex-cli.production` | Convex CLI deploy key for prod |
+
+**Local Development (expo start):**
+- Expo loads `.env.development` automatically
+- Create with: `cp .env.example .env.development`
+
+**EAS Builds:**
+- EAS does NOT auto-load .env files
+- Set env vars in `eas.json` per profile or use EAS Secrets
+- See: https://docs.expo.dev/eas/environment-variables/
+
+**Convex:**
+- Pull: `pnpm env:pull:convex`
+- Push: `pnpm env:push:convex:development`
+- Verify: `pnpm env:verify:convex`
+
+**Required Variables:**
+```bash
+EXPO_PUBLIC_CONVEX_URL=     # Convex deployment URL
+```
+
+**Optional (CI):**
+```bash
 EXPO_TOKEN=                  # EAS authentication token
 ```
 
